@@ -21,6 +21,17 @@ import e3 from './e3.jpg'
 import d1 from './d1.jpg'
 import d2 from './d2.jpeg'
 
+import a1 from './a1.jpg'
+import a2 from './a2.jpg'
+import a3 from './a3.jpg'
+
+import f1 from './f1.png'
+import f2 from './f2.jpg'
+
+import g1 from './g1.jpg'
+import g2 from './g2.jpg'
+
+
 export const assets ={
     logo,
     credit,
@@ -31,6 +42,7 @@ export const assets ={
     star,
     dim,
     d1,d2,
+    a1,a2,f1,f2,a3,g1,g2
 }
 
 export const stepsData = [

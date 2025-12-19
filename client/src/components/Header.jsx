@@ -4,7 +4,7 @@ import { assets } from '../assets/assets'
 const Header = () => {
   return (
     // Main Container with Gray Background and Rounded Corners
-    <div className='flex flex-col lg:flex-row items-center justify-between gap-10 py-10 px-8 lg:px-16 bg-gray-100/80 rounded-[30px] mt-10 min-h-[80vh]'>
+    <div className='flex flex-col lg:flex-row items-center justify-between gap-10 py-10 px-8 lg:px-16 bg-gray-100/80 rounded-[30px] mt-5 min-h-[80vh]'>
       
       {/* --- Left Side: Content --- */}
       <div className='flex-1 text-center lg:text-left'>
