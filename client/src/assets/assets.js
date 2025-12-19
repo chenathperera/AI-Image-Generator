@@ -3,10 +3,26 @@ import logo from './logo.png'
 import credit from './credit.svg'
 import profile from './profile.svg'
 
+import c1 from './c1.png'
+import c2 from './c2.jpeg'
+import c3 from './c3.jpeg'
+import c4 from './c4.png'
+
+import b1 from './b1.png'
+import b2 from './b2.png'
+import b3 from './b3.png'
+
+import e1 from './e1.jpg'
+import e2 from './e2.jpg'
+import e3 from './e3.jpg'
+
 export const assets ={
     logo,
     credit,
     profile,
+    c1,c2,c3,c4,
+    e1,e2,e3,
+    b1,b2,b3
 }
 
 export const stepsData = [
