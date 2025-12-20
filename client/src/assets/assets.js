@@ -7,6 +7,7 @@ import dim from './dim.svg'
 import fac from './fac.svg'
 import ins from './ins.svg'
 import twi from './twi.svg'
+import icon from './site_icon.svg'
 
 import c1 from './c1.png'
 import c2 from './c2.jpeg'
@@ -47,6 +48,7 @@ export const assets ={
     d1,d2,
     a1,a2,f1,f2,a3,g1,g2,
     fac,ins,twi,
+    icon,
 }
 
 export const stepsData = [
