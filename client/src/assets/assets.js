@@ -39,7 +39,7 @@ import f2 from './f2.jpg'
 
 import g1 from './g1.jpg'
 import g2 from './g2.jpg'
-
+import side_image from './side_image.png'
 
 export const assets ={
     logo,
@@ -54,7 +54,7 @@ export const assets ={
     a1,a2,f1,f2,a3,g1,g2,
     fac,ins,twi,
     icon,
-    pro,pro2,email,pw,cross,
+    pro,pro2,email,pw,cross,side_image
 }
 
 export const stepsData = [

@@ -1,12 +1,21 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { assets } from '../assets/assets'
+import { motion } from 'framer-motion'
+import { AppContext } from '../context/AppContext'
+import { useNavigate } from 'react-router-dom'
 
 const Showcase = () => {
+  const { user, setShowLogin } = useContext(AppContext)
+  const navigate = useNavigate()
 
-  // 1. Define your data array here
+  const onClickHandler = () => {
+    if (user) { navigate('/result') } 
+    else { setShowLogin(true) }
+  }
+
   const showcaseData = [
     {
-      image: assets.e2, // Replace with your actual asset variable
+      image: assets.e2,
       prompt: "Photorealistic 4k image of standing on a bright, green football pitch, taking a close selfie with Cristiano Ronaldo and Lionel Messi. He is holding a smartphone with one hand, smiling naturally..."
     },
     {
@@ -25,8 +34,12 @@ const Showcase = () => {
 
   return (
     <div className='flex flex-col items-center justify-center my-24 p-6'>
-      {/* --- Section Header --- */}
-      <div className='text-center max-w-3xl mb-12'>
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className='text-center max-w-3xl mb-12'
+      >
         <h1 className='text-4xl sm:text-5xl font-bold text-zinc-900 leading-tight mb-6'>
           Upload Your Photo. <span className='text-blue-600'>Get <br className='hidden sm:block'/> Stunning AI Edits Instantly.</span>
         </h1>
@@ -35,41 +48,36 @@ const Showcase = () => {
           style you like, upload your photo, and PairPix automatically generates your 
           edit — no prompts needed.
         </p>
-      </div>
+      </motion.div>
 
-      {/* --- Cards Grid --- */}
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full'>
-        
-        {/* 2. Map through the data array */}
         {showcaseData.map((card, index) => (
-          <div key={index} className='bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 flex flex-col'>
-            
-            {/* Image Section */}
+          <motion.div 
+            key={index}
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ delay: index * 0.1 }}
+            viewport={{ once: true }}
+            className='bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 flex flex-col'
+          >
             <div className='h-64 w-full overflow-hidden'>
-              <img 
-                src={card.image} 
-                alt={`Sample ${index + 1}`} 
-                className='w-full h-full object-cover hover:scale-110 transition-transform duration-500'
-              />
+              <img src={card.image} alt={`Sample ${index + 1}`} className='w-full h-full object-cover hover:scale-110 transition-transform duration-500' />
             </div>
-
-            {/* Text & Button Section */}
             <div className='p-5 flex flex-col flex-grow bg-gray-50/50'>
               <p className='text-xs text-gray-700 leading-relaxed mb-6'>
-                <span className='font-bold text-blue-600'>Prompt - </span>
-                "{card.prompt}"
+                <span className='font-bold text-blue-600'>Prompt - </span> "{card.prompt}"
               </p>
-
-              <button className='mt-auto w-full bg-black text-white py-2.5 rounded-lg flex items-center justify-center gap-2 hover:bg-zinc-800 transition-all active:scale-95 text-sm'>
+              <button 
+                onClick={onClickHandler}
+                className='mt-auto w-full bg-black text-white py-2.5 rounded-lg flex items-center justify-center gap-2 hover:bg-zinc-800 transition-all active:scale-95 text-sm'
+              >
                 Try <span className='text-[10px]'>💎</span>
               </button>
             </div>
-          </div>
+          </motion.div>
         ))}
-
       </div>
     </div>
   )
 }
-
 export default Showcase
