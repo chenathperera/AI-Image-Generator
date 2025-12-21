@@ -1,7 +1,7 @@
 
 import logo from './logo.png'
 import credit from './credit.svg'
-import profile from './profile.svg'
+import pro4 from './pro4.svg'
 import star from './star.svg'
 import dim from './dim.svg'
 import fac from './fac.svg'
@@ -44,7 +44,7 @@ import side_image from './side_image.png'
 export const assets ={
     logo,
     credit,
-    profile,
+    pro4,
     c1,c2,c3,c4,
     e1,e2,e3,
     b1,b2,b3,

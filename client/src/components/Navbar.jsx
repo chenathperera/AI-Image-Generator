@@ -5,7 +5,8 @@ import { AppContext } from '../context/AppContext'
 
 const Navbar = () => {
 
-    const {user,setShowLogin} = useContext(AppContext)
+    const { user, setShowLogin, logout, credit } = useContext(AppContext)
+
     const navigate = useNavigate()
 
 
@@ -19,17 +20,30 @@ const Navbar = () => {
                 {
                     user ?
                         <div className='flex items-center gap-2 sm:gap-3'>
-                            <button onClick={() => navigate('/buy')}  className='flex  items-center gap-2 bg-blue-100 px-4 sm:px-6 py-1.5 sm:py-3 rounded-full hover:scale-105 transition-all duration-700'>
-                                <img className='w-7' src={assets.credit} />
-                                <p>Credits left : 50</p>
+                            <button onClick={() => navigate('/buy')} className='flex  items-center gap-2 bg-blue-100 px-4 sm:px-6 py-1.5 sm:py-3 rounded-full hover:scale-105 transition-all duration-700'>
+                                <img className='w-5' src={assets.credit} />
+                                <p>Credits left : {credit}</p>
                             </button>
-                            <p className='text-gray-600 max-sm:hidden pl-4'>Hi , Chenath</p>
+                            <p className='text-gray-600 max-sm:hidden pl-4'>Hi, {user.name}</p>
                             <div className='relative group'>
-                                <img src={assets.profile} className='w-10 drop-shadow' />
+                                <img
+                                    src={assets.pro4}
+                                    /* Added h-7 to match your w-7 for a perfect circle */
+                                    className='w-9 h-9 rounded-full object-cover border border-gray-200 cursor-pointer drop-shadow-sm'
+                                    alt="profile"
+                                />
 
-                                <div className='absolute hidden group-hover:block top-12 right-0 z-10 text-black'>
-                                    <ul className='list-none m-0 p-2 bg-white rounded-md border text-sm'>
-                                        <li className='py-1 px-2 cursor-pointer pr-10'>Logout</li>
+                                {/* Changed top-12 to top-14 to add margin between the icon and the card */}
+                                <div className='absolute hidden group-hover:block top-14 right-0 z-10 text-black'>
+
+                                    {/* Optional: Add a small transparent 'bridge' so the menu doesn't close 
+            if the mouse moves through the gap between the icon and the card */}
+                                    <div className='absolute -top-5 left-0 w-full h-5 bg-transparent'></div>
+
+                                    <ul className='list-none m-0 p-2 bg-white rounded-md border text-sm shadow-lg'>
+                                        <li onClick={logout} className='py-1 px-2 cursor-pointer pr-10 hover:bg-gray-100 whitespace-nowrap'>
+                                            Logout
+                                        </li>
                                     </ul>
                                 </div>
                             </div>
@@ -38,7 +52,7 @@ const Navbar = () => {
                         :
                         <div className='flex items-center gap-2  sm:gap-5'>
                             <p onClick={() => navigate('/buy')} className='cursor-pointer'>Pricing</p>
-                            <button onClick={()=>setShowLogin(true)} className='bg-zinc-800 text-white px-7 py-2 sm:px-10 text-sm rounded-full'>Login</button>
+                            <button onClick={() => setShowLogin(true)} className='bg-zinc-800 text-white px-7 py-2 sm:px-10 text-sm rounded-full'>Login</button>
                         </div>
                 }
             </div>
