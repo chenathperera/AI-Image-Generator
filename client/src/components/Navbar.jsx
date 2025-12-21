@@ -29,7 +29,7 @@ const Navbar = () => {
                                 <img
                                     src={assets.pro4}
                                     /* Added h-7 to match your w-7 for a perfect circle */
-                                    className='w-9 h-9 rounded-full object-cover border border-gray-200 cursor-pointer drop-shadow-sm'
+                                    className='cursor-pointer ' width={35}
                                     alt="profile"
                                 />
 

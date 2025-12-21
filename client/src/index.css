@@ -9,3 +9,13 @@
   color:#e0e0e0;
   font-weight:300;
 }
+
+.image-loading {
+  filter: blur(20px);
+  clip-path: inset(0);
+}
+
+.image-loaded {
+  filter: blur(0);
+  transition: filter 0.5s ease-in-out;
+}
