@@ -1,10 +1,59 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { assets } from '../assets/assets'
 import { AppContext } from '../context/AppContext'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 const Login = () => {
     const [state, setState] = useState('Login')
-    const { setShowLogin } = useContext(AppContext)
+    const { setShowLogin, backendUrl, setToken, setUser } = useContext(AppContext)
+
+    const [name, setName] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+
+    const onSubmitHandler = async (e) => {
+        e.preventDefault();
+
+        try {
+
+            if (state === 'Login') {
+
+                const {data} = await axios.post(backendUrl + '/api/user/login', { email, password });
+                if (data.success) {
+
+                    setToken(data.token)
+                    setUser(data.user)
+                    localStorage.getItem('token', data.token)
+                    setShowLogin(false)
+
+                } else {
+                    toast.error(data.message)
+
+                }
+
+            }else{
+
+                
+                const {data} = await axios.post(backendUrl + '/api/user/register', { name,email, password });
+                if (data.success) {
+
+                    setToken(data.token)
+                    setUser(data.user)
+                    localStorage.getItem('token', data.token)
+                    setShowLogin(false)
+
+                } else {
+                    toast.error(data.message)
+
+                }
+            }
+
+        } catch (error) {
+
+             toast.error(error.message)
+        }
+    }
 
     useEffect(() => {
         document.body.style.overflow = 'hidden';
@@ -46,7 +95,7 @@ const Login = () => {
 
                 {/* Right Side: Form Content */}
                 {/* Removed justify-center to fix the top margin issue */}
-                <form className='p-10 md:p-12 text-slate-500 w-full md:w-1/2 flex flex-col'>
+                <form onSubmit={onSubmitHandler} className='p-10 md:p-12 text-slate-500 w-full md:w-1/2 flex flex-col'>
 
                     {/* Logo: Centered */}
                     <div className='flex justify-center items-center gap-2 mb-8'>
@@ -62,18 +111,18 @@ const Login = () => {
                     {state !== 'Login' && (
                         <div className='border px-5 py-2 flex items-center gap-2 rounded-full mt-4'>
                             <img src={assets.pro} width={16} alt="" />
-                            <input className='outline-none text-sm w-full' type='text' placeholder='Full Name' required />
+                            <input onChange={e => setName(e.target.value)} value={name} className='outline-none text-sm w-full' type='text' placeholder='Full Name' required />
                         </div>
                     )}
 
                     <div className='border px-5 py-2 flex items-center gap-2 rounded-full mt-4'>
                         <img src={assets.email} width={18} alt="" />
-                        <input className='outline-none text-sm w-full' type='email' placeholder='Email id' required />
+                        <input onChange={e => setEmail(e.target.value)} value={email} className='outline-none text-sm w-full' type='email' placeholder='Email id' required />
                     </div>
 
                     <div className='border px-5 py-2 flex items-center gap-2 rounded-full mt-4'>
                         <img src={assets.pw} width={18} alt="" />
-                        <input className='outline-none text-sm w-full' type='password' placeholder='Password' required />
+                        <input onChange={e => setPassword(e.target.value)} value={password} className='outline-none text-sm w-full' type='password' placeholder='Password' required />
                     </div>
 
                     <p className='text-xs text-blue-600 my-4 cursor-pointer w-fit'>Forgot Password</p>
