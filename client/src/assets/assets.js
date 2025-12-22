@@ -13,6 +13,7 @@ import pro2 from './pro2.svg'
 import email from './email.svg'
 import pw from './pw.svg'
 import cross from './cross_icon.svg'
+import logout from './logout.svg'
 
 import c1 from './c1.png'
 import c2 from './c2.jpeg'
@@ -54,7 +55,8 @@ export const assets ={
     a1,a2,f1,f2,a3,g1,g2,
     fac,ins,twi,
     icon,
-    pro,pro2,email,pw,cross,side_image
+    pro,pro2,email,pw,cross,side_image,
+    logout,
 }
 
 export const stepsData = [
