@@ -13,7 +13,10 @@ const userAuth = async (req,res,next)=>{
 
         const token_decode = jwt.verify(token,process.env.JWT_SECRET);
         if(token_decode.id){
-             req.body.userId = token_decode.id;
+             if (!req.body) {
+                req.body = {};
+            }
+            req.body.userId = token_decode.id;
         }else{
              return res.json({success:false,message:"Not authorized login agin"})
   

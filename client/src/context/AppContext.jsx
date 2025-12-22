@@ -59,14 +59,18 @@ const AppContextProvider = (props) => {
         }
     }
 
-    const addToHistory = (image, name) => {
-        const newEntry = {
-            id: Date.now(),
+    // Inside your Context file (AppContext.jsx)
+    const addToHistory = (image, name, prompt) => {
+        const newItem = {
+            id: Date.now(), // Unique ID for React keys
             image: image,
             name: name,
+            prompt: prompt,
             date: new Date().toLocaleDateString()
         };
-        setHistory(prev => [newEntry, ...prev]);
+
+        // Use the functional update to ensure React sees the change
+        setHistory(prevHistory => [newItem, ...prevHistory]);
     };
 
     const removeFromHistory = (id) => {
@@ -89,7 +93,7 @@ const AppContextProvider = (props) => {
 
     const value = {
         user, setUser, showLogin, setShowLogin, backendUrl, token, setToken,
-        credit, setCredit, loadCreditsData, logout, generateImage,history, setHistory,removeFromHistory,addToHistory
+        credit, setCredit, loadCreditsData, logout, generateImage, history, setHistory, removeFromHistory, addToHistory
     }
 
     return (

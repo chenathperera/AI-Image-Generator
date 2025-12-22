@@ -13,10 +13,19 @@ export const styleItems = [
     {
         id: 2,
         category: 'Couple',
-        prompt: 'A romantic couple walking in a rain-washed Parisian street, cinematic lighting...',
+        prompt: 'change dress color into white keep other same',
         images: [assets.c1, assets.c2],
         steps: ["1. upload your photo", "2. upload partner photo", "3. Click generate button"],
-        uploadType: 'double',
+        uploadType: 'single',
+        description: 'romantic rain paris'
+    },
+    {
+        id: 3,
+        category: 'Women',
+        prompt: 'change dress color red keep other same',
+        images: [assets.f1, assets.c2],
+        steps: ["1. upload your photo", "2. upload partner photo", "3. Click generate button"],
+        uploadType: 'single',
         description: 'romantic rain paris'
     }
 ];
