@@ -11,6 +11,7 @@ const AppContextProvider = (props) => {
     const [token, setToken] = useState(localStorage.getItem('token'))
 
     const [credit, setCredit] = useState(false)
+    const [history, setHistory] = useState([]);
 
     const backendUrl = import.meta.env.VITE_BACKEND_URL
 
@@ -36,14 +37,14 @@ const AppContextProvider = (props) => {
     const generateImage = async (prompt) => {
 
         try {
-        const { data } = await axios.post(backendUrl + '/api/image/generate-image', { prompt }, { headers: { token } });
-        console.log("Backend Response:", data); // Check this in Browser Console (F12)
-        
-        if (data.success) {
-            loadCreditsData();
-            // Ensure the key name matches exactly what the backend sends (resultImageUrl)
-            return data.resultImageUrl; 
-        } else {
+            const { data } = await axios.post(backendUrl + '/api/image/generate-image', { prompt }, { headers: { token } });
+            console.log("Backend Response:", data); // Check this in Browser Console (F12)
+
+            if (data.success) {
+                loadCreditsData();
+                // Ensure the key name matches exactly what the backend sends (resultImageUrl)
+                return data.resultImageUrl;
+            } else {
                 toast.error(data.message)
                 loadCreditsData()
 
@@ -57,6 +58,20 @@ const AppContextProvider = (props) => {
 
         }
     }
+
+    const addToHistory = (image, name) => {
+        const newEntry = {
+            id: Date.now(),
+            image: image,
+            name: name,
+            date: new Date().toLocaleDateString()
+        };
+        setHistory(prev => [newEntry, ...prev]);
+    };
+
+    const removeFromHistory = (id) => {
+        setHistory(prev => prev.filter(item => item.id !== id));
+    };
 
 
     const logout = () => {
@@ -74,7 +89,7 @@ const AppContextProvider = (props) => {
 
     const value = {
         user, setUser, showLogin, setShowLogin, backendUrl, token, setToken,
-        credit, setCredit, loadCreditsData, logout, generateImage
+        credit, setCredit, loadCreditsData, logout, generateImage,history, setHistory,removeFromHistory,addToHistory
     }
 
     return (
