@@ -3,6 +3,7 @@ import { assets } from '../assets/assets'
 import { AppContext } from '../context/AppContext'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
 
 const Login = () => {
     const [state, setState] = useState('Login')
@@ -11,6 +12,8 @@ const Login = () => {
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+
+    const navigate = useNavigate()
 
     const onSubmitHandler = async (e) => {
         e.preventDefault();
@@ -26,6 +29,9 @@ const Login = () => {
                     setUser(data.user)
                     localStorage.setItem('token', data.token)
                     setShowLogin(false)
+                    navigate('/dash') // Change this to your dashboard path
+                    toast.success("Welcome back!")
+                    
 
                 } else {
                     toast.error(data.message)

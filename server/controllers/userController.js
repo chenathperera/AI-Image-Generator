@@ -170,4 +170,24 @@ export const getUserHistory = async (req, res) => {
     }
 }
 
+// Remove item from history
+export const deleteUserHistory = async (req, res) => {
+    try {
+        const { historyId } = req.body; // The _id of the history item
+        const userId = req.body.userId; // Set by userAuth middleware
+
+        // Delete the item only if it belongs to the logged-in user
+        const deletedItem = await historyModel.findOneAndDelete({ _id: historyId, userId });
+
+        if (deletedItem) {
+            res.json({ success: true, message: "Deleted from History" });
+        } else {
+            res.json({ success: false, message: "Item not found or unauthorized" });
+        }
+    } catch (error) {
+        console.log("Delete History Error:", error);
+        res.json({ success: false, message: error.message });
+    }
+}
+
 export { registerUser, loginUser, userCredit, adminLogin ,addToUserHistory};

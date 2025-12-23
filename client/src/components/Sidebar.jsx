@@ -1,9 +1,10 @@
 import React, { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { assets } from '../assets/assets';
 import { AppContext } from '../context/AppContext'; // Correctly import AppContext
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
-    
+
     const menuItems = [
         { name: 'Image to image', icon: '📷' },
         { name: 'Men', icon: '👤' },
@@ -15,6 +16,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
         { name: 'History', icon: '🕒' },
     ];
 
+    const navigate = useNavigate();
     // Destructure the logout function from AppContext
     const { logout } = useContext(AppContext);
 
@@ -24,12 +26,12 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
                 <nav className='flex flex-col gap-1'>
                     <ul className='space-y-1'>
                         {menuItems.map((item) => (
-                            <li 
+                            <li
                                 key={item.name}
                                 onClick={() => setActiveTab(item.name)}
                                 className={`flex items-center gap-3 px-4 py-3 cursor-pointer rounded-xl transition-all duration-300 
-                                    ${activeTab === item.name 
-                                        ? 'bg-black text-white shadow-md shadow-gray-400' 
+                                    ${activeTab === item.name
+                                        ? 'bg-black text-white shadow-md shadow-gray-400'
                                         : 'text-gray-500 hover:bg-gray-100 hover:text-black hover:pl-6'
                                     }`}
                             >
@@ -46,20 +48,23 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
                 <div className='bg-[#F2F2F2] p-6 rounded-[25px] text-center border border-transparent hover:border-gray-300 transition-all'>
                     <div className='flex items-center justify-center gap-2 mb-2'>
                         <div className='w-7 h-7 bg-black rounded-full flex items-center justify-center'>
-                            <span className='text-white text-xs'>↺</span>
+                            <span className='text-white text-xs'>💎</span> {/* Changed icon to diamond */}
                         </div>
-                        <h3 className='font-bold text-lg text-gray-800 tracking-tight'>Upgrade to Pro</h3>
+                        <h3 className='font-bold text-lg text-gray-800 tracking-tight'>Buy Credits</h3>
                     </div>
                     <p className='text-[10px] text-gray-400 leading-tight mb-4 px-2'>
-                        Unlock premium styles and high-resolution AI generations.
+                        Get more credits to continue creating amazing AI art.
                     </p>
-                    <button className='w-full bg-[#4000FF] text-white py-3 rounded-[15px] font-bold text-sm shadow-lg hover:bg-[#3300CC] transition-all active:scale-95'>
-                        Upgrade Now
+                    <button
+                        onClick={() => navigate('/buy')} // 3. Implementation of navigate
+                        className='w-full bg-[#4000FF] text-white py-3 rounded-[15px] font-bold text-sm shadow-lg hover:bg-[#3300CC] transition-all active:scale-95'
+                    >
+                        Purchase Now
                     </button>
                 </div>
 
                 {/* Log Out Button calling the Context function */}
-                <button 
+                <button
                     onClick={logout}
                     className='flex items-center gap-3 mt-8 px-4 text-gray-800 font-bold text-sm hover:text-red-600 transition-colors group'
                 >

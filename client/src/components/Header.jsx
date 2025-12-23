@@ -9,7 +9,7 @@ const Header = () => {
   const navigate = useNavigate()
 
   const onClickHandler = () => {
-    if (user) { navigate('/result') } 
+    if (user) { navigate('/dash') } 
     else { setShowLogin(true) }
   }
 

@@ -99,9 +99,28 @@ const AppContextProvider = (props) => {
         setHistory(prevHistory => [newItem, ...prevHistory]);
     };
 
-    const removeFromHistory = (id) => {
-        setHistory(prev => prev.filter(item => item.id !== id));
-    };
+    const removeFromHistory = async (historyId) => {
+    try {
+        const { data } = await axios.post(
+            backendUrl + '/api/user/delete-history', 
+            { historyId }, 
+            { headers: { token } }
+        );
+
+        if (data.success) {
+            toast.success("Removed from history");
+            // Option 1: Re-fetch everything from DB
+            loadHistory(); 
+            // Option 2: Filter local state for instant UI update
+            // setHistory(prev => prev.filter(item => item._id !== historyId));
+        } else {
+            toast.error(data.message);
+        }
+    } catch (error) {
+        console.log(error);
+        toast.error("Failed to delete");
+    }
+};
 
 
     const logout = () => {
