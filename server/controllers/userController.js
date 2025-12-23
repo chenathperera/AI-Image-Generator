@@ -1,4 +1,5 @@
 import userModel from "../models/userModel.js";
+import historyModel from "../models/historyModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -128,4 +129,45 @@ const adminLogin = async (req, res) => {
     
 }
 
-export { registerUser, loginUser, userCredit, adminLogin };
+// Save to history
+ const addToUserHistory = async (req, res) => {
+    try {
+        // Use req.body.userId which was set by your userAuth middleware
+        const { userId, image, name, prompt } = req.body;
+
+        if (!image) {
+            return res.json({ success: false, message: "Image data is missing" });
+        }
+
+        const historyData = { 
+            userId, // This comes from the token decode
+            image, 
+            name, 
+            prompt, 
+            date: Date.now() 
+        };
+
+        const newHistory = new historyModel(historyData);
+        await newHistory.save();
+
+        res.json({ success: true, message: "Added to History" });
+    } catch (error) {
+        console.log("History Save Error:", error);
+        res.json({ success: false, message: error.message });
+    }
+}
+
+// Get user history
+export const getUserHistory = async (req, res) => {
+    try {
+        // userAuth middleware usually adds 'userId' to the req object
+        const userId = req.body.userId; 
+        
+        const history = await historyModel.find({ userId }).sort({ _id: -1 });
+        res.json({ success: true, history });
+    } catch (error) {
+        res.json({ success: false, message: error.message });
+    }
+}
+
+export { registerUser, loginUser, userCredit, adminLogin ,addToUserHistory};

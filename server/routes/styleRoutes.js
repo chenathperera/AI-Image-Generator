@@ -1,5 +1,5 @@
 import express from 'express';
-import { addStyle } from '../controllers/styleController.js';
+import { addStyle, listStyles } from '../controllers/styleController.js';
 import upload from '../middlewares/multer.js';
 
 const styleRouter = express.Router();
@@ -13,8 +13,6 @@ styleRouter.post('/add', upload.fields([
 ]), addStyle);
 
 // You already have your /all route here
-styleRouter.get('/all', async (req, res) => {
-    // ... your list logic
-});
+styleRouter.get('/all', listStyles);
 
 export default styleRouter;

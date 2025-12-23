@@ -5,6 +5,8 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 
 const MainDash = ({ activeTab, selectedStyle, setSelectedStyle }) => {
+    // Add this state at the top with your other useState hooks
+    const [styles, setStyles] = useState([]);
     const [mainImage, setMainImage] = useState(null);
     const [secondImage, setSecondImage] = useState(null);
 
@@ -24,8 +26,29 @@ const MainDash = ({ activeTab, selectedStyle, setSelectedStyle }) => {
         setShowLogin,
         backendUrl,
         token,
-        setCredit
+        setCredit,
+        loadHistory
     } = useContext(AppContext);
+
+    const fetchStyles = async () => {
+        try {
+            console.log("Attempting to fetch from:", backendUrl + '/api/style/all');
+            const { data } = await axios.get(backendUrl + '/api/style/all');
+
+            if (data.success) {
+                console.log("Success! Data received:", data.styles);
+                setStyles(data.styles);
+            } else {
+                console.log("Backend returned success:false", data.message);
+            }
+        } catch (error) {
+            console.error("Axios Error:", error.message);
+        }
+    };
+
+    useEffect(() => {
+        fetchStyles();
+    }, []);
 
     // Load saved style on mount
     useEffect(() => {
@@ -61,36 +84,49 @@ const MainDash = ({ activeTab, selectedStyle, setSelectedStyle }) => {
         localStorage.removeItem('lastGeneratedImg');
     };
 
-    const displayItems = activeTab === 'Image to image'
-        ? styleItems
-        : styleItems.filter(item => item.category === activeTab);
-
+    // Replace your existing displayItems logic with this:
+    const displayItems = (activeTab === 'Image to image' || activeTab === '')
+        ? styles
+        : styles.filter(item =>
+            item.category?.toLowerCase() === activeTab?.toLowerCase()
+        );
     // Inside MainDash.jsx -> handleDownload function
 
-    const handleDownload = (imgUrl) => {
-        // 1. Determine which image to download
-        const urlToUse = imgUrl || generatedImg;
-        if (!urlToUse) return;
+    const handleDownload = async (imgUrl) => {
+    const urlToUse = imgUrl || generatedImg;
+    if (!urlToUse) return;
 
-        // 2. Perform the actual browser download
-        const link = document.createElement('a');
-        link.href = urlToUse;
-        link.download = `PairPix-AI-${Date.now()}.png`; // Unique filename
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    // 1. Trigger Browser Download
+    const link = document.createElement('a');
+    link.href = urlToUse;
+    link.download = `AI-Gen-${Date.now()}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 
-        // 3. Update History ONLY if downloading a NEWLY generated image
-        // We check if it's the current generatedImg so we don't duplicate history
-        if (urlToUse === generatedImg) {
-            addToHistory(
-                urlToUse,
-                selectedStyle?.name || "AI Generated",
-                selectedStyle?.prompt || "Image to Image"
+    // 2. Save to Database (Only if it's a new generation)
+    if (urlToUse === generatedImg) {
+        
+        try {
+            const { data } = await axios.post(backendUrl + '/api/user/add-history', 
+                { 
+                    userId: user._id, 
+                    image: urlToUse, 
+                    name: selectedStyle?.name || "AI Generated",
+                    prompt: selectedStyle?.prompt 
+                }, 
+                { headers: { token } }
             );
-            toast.success("Saved to History!");
+
+            if (data.success) {
+                toast.success("Saved to History");
+                loadHistory(); // <--- Call the function from Context to refresh list from DB
+            }
+        } catch (error) {
+           console.error(error);
         }
-    };
+    }
+};
 
     const handleGenerate = async () => {
         if (!mainImage) return toast.error("Please upload a photo first!");
@@ -156,7 +192,7 @@ const MainDash = ({ activeTab, selectedStyle, setSelectedStyle }) => {
                 ) : (
                     <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
                         {history.map((item) => (
-                            <div key={item.id} className='bg-white p-4 rounded-[24px] shadow-sm border border-gray-100 group relative'>
+                            <div key={item._id} className='bg-white p-4 rounded-[24px] shadow-sm border border-gray-100 group relative'>
                                 <img src={item.image} className='w-full h-52 object-cover rounded-[18px] mb-4 shadow-inner' alt="" />
                                 <div className='flex items-center justify-between'>
                                     <div>
@@ -256,7 +292,7 @@ const MainDash = ({ activeTab, selectedStyle, setSelectedStyle }) => {
             <h2 className='text-2xl font-semibold mb-8'>Explore Endless Creativity</h2>
             <div className='grid grid-cols-2 md:grid-cols-4 gap-6'>
                 {displayItems.map((item) => (
-                    <div key={item.id} onClick={() => handleStyleSelection(item)} className='cursor-pointer group relative overflow-hidden rounded-3xl shadow-sm hover:shadow-xl transition-all'>
+                    <div key={item._id} onClick={() => handleStyleSelection(item)} className='cursor-pointer group relative overflow-hidden rounded-3xl shadow-sm hover:shadow-xl transition-all'>
                         <img src={item.images[0]} className='w-full h-72 object-cover group-hover:scale-110 transition-transform duration-700' alt="" />
                         <div className='absolute bottom-4 left-4'>
                             <span className='bg-white/90 px-3 py-1 rounded-full text-[10px] font-bold'>{item.category}</span>

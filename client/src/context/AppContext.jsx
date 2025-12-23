@@ -59,6 +59,32 @@ const AppContextProvider = (props) => {
         }
     }
 
+
+    const loadHistory = async () => {
+    try {
+        // We don't need to send userId in the body because userAuth middleware 
+        // finds it from the token automatically.
+        const { data } = await axios.post(
+            backendUrl + '/api/user/get-history', 
+            {}, 
+            { headers: { token } } 
+        );
+
+        if (data.success) {
+            setHistory(data.history);
+        }
+    } catch (error) {
+        console.log("Error loading history:", error);
+    }
+};
+
+    // Call loadHistory whenever the user logs in
+    useEffect(() => {
+        if (token && user) {
+            loadHistory();
+        }
+    }, [token, user]);
+
     // Inside your Context file (AppContext.jsx)
     const addToHistory = (image, name, prompt) => {
         const newItem = {

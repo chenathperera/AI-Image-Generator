@@ -41,5 +41,17 @@ const addStyle = async (req, res) => {
         res.json({ success: false, message: error.message });
     }
 }
+// Controller to fetch all styles
+const listStyles = async (req, res) => {
+    try {
+        const styles = await styleModel.find({});
+        res.json({ success: true, styles });
+    } catch (error) {
+        console.log("Error fetching styles:", error);
+        res.json({ success: false, message: error.message });
+    }
+}
 
-export { addStyle };
+// Export it along with addStyle
+export { addStyle, listStyles };
+
