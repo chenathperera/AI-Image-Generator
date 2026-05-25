@@ -6,10 +6,6 @@ import FormData from 'form-data';
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-import { SocksProxyAgent } from 'socks-proxy-agent';
-
-// Routes HF requests through Windscribe's local SOCKS5 proxy (port 1080)
-const proxyAgent = new SocksProxyAgent('socks5://127.0.0.1:1080');
 
 
 
@@ -135,62 +131,89 @@ const imgToImg = async (req, res) => {
 
         const imageBase64 = files[0].buffer.toString('base64');
 
-        // Call Hugging Face instruct-pix2pix (free, fast with VPN)
-        console.log("Calling Hugging Face API...");
-        let response;
-        let retries = 3;
+        // Use Stable Horde — free volunteer GPU network (confirmed reachable)
+        console.log("Submitting to Stable Horde...");
 
-        while (retries > 0) {
+        const submitRes = await axios.post(
+            "https://stablehorde.net/api/v2/generate/async",
+            {
+                prompt: `safe for work, SFW, fully clothed, appropriate, ${prompt}, high quality, detailed`,
+                negative_prompt: "nsfw, nude, naked, explicit, inappropriate, adult content",
+                params: {
+                    sampler_name: "k_euler_a",
+                    cfg_scale: 7,
+                    denoising_strength: 0.7,
+                    height: 512,
+                    width: 512,
+                    steps: 15,
+                    n: 1
+                },
+                source_image: imageBase64,
+                source_processing: "img2img",
+                nsfw: false,
+                censor_nsfw: true,
+                slow_workers: true,
+                allow_downgrade: true,
+                r2: false
+            },
+            {
+                headers: {
+                    "apikey": process.env.STABLE_HORDE_API_KEY,
+                    "Content-Type": "application/json"
+                },
+                timeout: 30000
+            }
+        );
+
+        const jobId = submitRes.data.id;
+        console.log("Job ID:", jobId);
+
+        // Poll until done — max 15 minutes
+        let resultImageUrl = null;
+
+        for (let attempt = 1; attempt <= 150; attempt++) {
+            await new Promise(r => setTimeout(r, 6000));
+
             try {
-                response = await axios.post(
-                    "https://api-inference.huggingface.co/models/timbrooks/instruct-pix2pix",
-                    {
-                        inputs: imageBase64,
-                        parameters: {
-                            prompt: prompt,
-                            num_inference_steps: 20,
-                            image_guidance_scale: 1.5,
-                            guidance_scale: 7.5
-                        }
-                    },
-                    {
-                        headers: {
-                            "Authorization": `Bearer ${process.env.HF_API_KEY}`,
-                            "Content-Type": "application/json",
-                        },
-                        httpsAgent: proxyAgent,
-                        responseType: "arraybuffer",
-                        timeout: 60000
-                    }
+                const checkRes = await axios.get(
+                    `https://stablehorde.net/api/v2/generate/check/${jobId}`,
+                    { headers: { "apikey": process.env.STABLE_HORDE_API_KEY }, timeout: 30000 }
                 );
-                console.log("HuggingFace generation successful!");
-                break;
-            } catch (retryErr) {
-                if (retryErr.response && retryErr.response.status === 503) {
-                    console.log("Model loading, retrying in 10 seconds...");
-                    retries--;
-                    if (retries === 0) throw retryErr;
-                    await new Promise(r => setTimeout(r, 10000));
-                } else {
-                    throw retryErr;
+
+                console.log(`Attempt ${attempt} — done: ${checkRes.data.done}, queue: ${checkRes.data.queue_position}`);
+
+                if (checkRes.data.done) {
+                    const statusRes = await axios.get(
+                        `https://stablehorde.net/api/v2/generate/status/${jobId}`,
+                        { headers: { "apikey": process.env.STABLE_HORDE_API_KEY }, timeout: 30000 }
+                    );
+                    const generation = statusRes.data.generations?.[0];
+                    if (generation?.censored) {
+                        console.log("Image censored — retrying...");
+                        // don't break, let it loop and submit a fresh job isn't possible
+                        // just return a helpful message
+                        return res.json({ success: false, message: "Image was flagged by content filter. Please try a different style or photo." });
+                    }
+                    if (generation?.img) {
+                        resultImageUrl = `data:image/webp;base64,${generation.img}`;
+                    }
+                    break;
                 }
+            } catch (pollErr) {
+                console.log(`Attempt ${attempt} — poll error, continuing: ${pollErr.message}`);
             }
         }
 
+        if (!resultImageUrl) {
+            return res.json({ success: false, message: "Generation timed out. Please try again." });
+        }
+
+        console.log("Generation successful!");
         await userModel.findByIdAndUpdate(userId, { creditBalance: user.creditBalance - 1 });
-
-        const base64Image = Buffer.from(response.data).toString('base64');
-        const resultImageUrl = `data:image/jpeg;base64,${base64Image}`;
-
         res.json({ success: true, resultImageUrl, creditBalance: user.creditBalance - 1 });
 
     } catch (error) {
-        if (error.response && error.response.data) {
-            const errorMsg = Buffer.from(error.response.data).toString();
-            console.log("HF Error:", errorMsg);
-            return res.json({ success: false, message: "AI Error: " + errorMsg });
-        }
-        console.log("HF Error:", error.message);
+        console.log("Error:", error.message);
         res.json({ success: false, message: error.message });
     }
 
