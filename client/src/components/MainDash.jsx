@@ -126,12 +126,8 @@ const MainDash = ({ activeTab, selectedStyle, setSelectedStyle }) => {
                 toast.success("Image Generated!");
             } else {
                 toast.error(data.message);
-                if (data.creditBalance == 0 || data.message.toLowerCase().includes('credit')) {
-
-                    // Use a small delay or ensure loadCreditsData exists
+                if (data.creditBalance == 0 || data.message?.toLowerCase().includes('credit')) {
                     if (loadCreditsData) loadCreditsData();
-
-                    console.log("Redirecting to buy page...");
                     navigate('/buy');
                 }
             }
